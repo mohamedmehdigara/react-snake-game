@@ -44,7 +44,7 @@ const Board = () => {
   const [direction, setDirection] = useState('right');
   const [gameOver, setGameOver] = useState(false);
   const [isGameStarted, setIsGameStarted] = useState(false);
-  const [boardSize, setBoardSize] = useState([]);
+  const [head, setHead] = useState([]);
 
   const boardRef = useRef();
 
@@ -68,48 +68,28 @@ const Board = () => {
 
   useEffect(() => {
     if (!isGameStarted) return;
-  
+
     const moveSnake = () => {
-        const head = { x: snake[0].x, y: snake[0].y };
-      
-        switch (direction) {
-          case 'up':
-            head.y -= 1;
-            break;
-          case 'down':
-            head.y += 1;
-            break;
-          case 'left':
-            head.x -= 1;
-            break;
-          case 'right':
-            head.x += 1;
-            break;
-          default:
-            break;
-        }
-      
-        if (
-          head.x < 0 ||
-          head.x >= boardSize ||
-          head.y < 0 ||
-          head.y >= boardSize ||
-          snake.some((segment, index) => index !== 0 && segment.x === head.x && segment.y === head.y)
-        ) {
-          setGameOver(true);
-          return; // Stop the snake movement
-        }
-      
-        // Rest of the code for moving the snake, checking food collision, etc.
-      };
-      
+      // Snake movement logic here
+
+      const boardSize = 20;
+      if (
+        head.x < 0 ||
+        head.x >= boardSize ||
+        head.y < 0 ||
+        head.y >= boardSize ||
+        snake.some((segment, index) => index !== 0 && segment.x === head.x && segment.y === head.y)
+      ) {
+        setGameOver(true);
+      }
+    };
+
     const gameInterval = setInterval(moveSnake, 200);
-  
+
     return () => {
       clearInterval(gameInterval);
     };
-  }, [snake, direction, isGameStarted, food]);
-  
+  }, [snake, direction, isGameStarted]);
 
   const generateFoodPosition = () => {
     const x = Math.floor(Math.random() * 20);
@@ -129,6 +109,7 @@ const Board = () => {
 
   const handleStartGame = () => {
     setIsGameStarted(true);
+    setGameOver(false); // Reset game over state
   };
 
   return (
