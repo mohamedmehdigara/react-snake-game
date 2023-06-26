@@ -50,47 +50,56 @@ const Board = () => {
 
   useEffect(() => {
     if (!isGameStarted) return;
-
-    const handleKeyDown = (event) => {
-      const { key } = event;
-      if (key === 'ArrowUp' && direction !== 'down') setDirection('up');
-      else if (key === 'ArrowDown' && direction !== 'up') setDirection('down');
-      else if (key === 'ArrowLeft' && direction !== 'right') setDirection('left');
-      else if (key === 'ArrowRight' && direction !== 'left') setDirection('right');
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [direction, isGameStarted]);
-
-  useEffect(() => {
-    if (!isGameStarted) return;
-
+  
     const moveSnake = () => {
-      // Snake movement logic here
-
-      const boardSize = 20;
+      const newSnake = [...snake];
+      const head = { x: newSnake[0].x, y: newSnake[0].y };
+  
+      switch (direction) {
+        case 'up':
+          head.y -= 1;
+          break;
+        case 'down':
+          head.y += 1;
+          break;
+        case 'left':
+          head.x -= 1;
+          break;
+        case 'right':
+          head.x += 1;
+          break;
+        default:
+          break;
+      }
+  
+      newSnake.unshift(head);
+  
+      if (head.x === food.x && head.y === food.y) {
+        setFood(generateFoodPosition());
+      } else {
+        newSnake.pop();
+      }
+  
       if (
         head.x < 0 ||
         head.x >= boardSize ||
         head.y < 0 ||
         head.y >= boardSize ||
-        snake.some((segment, index) => index !== 0 && segment.x === head.x && segment.y === head.y)
+        newSnake.some((segment, index) => index !== 0 && segment.x === head.x && segment.y === head.y)
       ) {
         setGameOver(true);
       }
+  
+      setSnake(newSnake);
     };
-
+  
     const gameInterval = setInterval(moveSnake, 200);
-
+  
     return () => {
       clearInterval(gameInterval);
     };
-  }, [snake, direction, isGameStarted]);
-
+  }, [snake, direction, isGameStarted, food]);
+  
   const generateFoodPosition = () => {
     const x = Math.floor(Math.random() * 20);
     const y = Math.floor(Math.random() * 20);
