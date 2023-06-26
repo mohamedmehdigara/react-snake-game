@@ -6,52 +6,36 @@ h1 {
   margin-top: 30px;
 }
 
-.board {
-  position: relative;
-}
 
-.start-button {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 10px 20px;
-  background-color: #4287f5;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-/* Rest of the CSS code remains the same */
 
 
 .snake {
+  position: absolute;
   width: 20px;
   height: 20px;
-  background-color: green;
+  background-color: #000;
 }
 
 .food {
   position: absolute;
   width: 20px;
   height: 20px;
-  background-color: red;
+  background-color: #f00;
 }
 
-/* Additional styling for the snake's head */
-.snake:first-child {
-  background-color: darkgreen;
-}
 .game-over {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  padding: 20px;
-  color: white;
+  text-align: center;
+}
+
+/* Rest of the CSS code remains the same */
+
+/* Additional styling for the snake's head */
+.snake:first-child {
+  background-color: darkgreen;
 }
 
 .game-over h2 {
