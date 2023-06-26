@@ -7,12 +7,25 @@ h1 {
 }
 
 .board {
-  width: 400px;
-  height: 400px;
-  border: 1px solid #ccc;
-  margin: 0 auto;
-  margin-top: 30px;
+  position: relative;
 }
+
+.start-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px 20px;
+  background-color: #4287f5;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* Rest of the CSS code remains the same */
+
 
 .snake {
   width: 20px;
@@ -31,4 +44,38 @@ h1 {
 .snake:first-child {
   background-color: darkgreen;
 }
+.game-over {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  color: white;
+}
+
+.game-over h2 {
+  margin: 0;
+}
+
+.game-over p {
+  margin: 10px 0;
+}
+
+.game-over button {
+  padding: 10px 20px;
+  background-color: #4287f5;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+
+/* Additional styling for the snake's head */
+.snake:first-child {
+  background-color: darkgreen;
+}
+
 
