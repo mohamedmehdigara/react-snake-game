@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 const BoardWrapper = styled.div`
@@ -12,14 +12,14 @@ const BoardContainer = styled.div`
   position: relative;
   width: 400px;
   height: 400px;
-  background-color: #222;
+  border: 1px solid #ccc;
 `;
 
 const SnakeSegment = styled.div`
   position: absolute;
   width: 20px;
   height: 20px;
-  background-color: #fff;
+  background-color: #333;
 `;
 
 const Food = styled.div`
@@ -35,26 +35,58 @@ const GameOverMessage = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 24px;
-  color: #fff;
+  font-weight: bold;
 `;
 
-const Board = () => {
-  const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
-  const [food, setFood] = useState({ x: 15, y: 15 });
-  const [direction, setDirection] = useState('right');
-  const [gameOver, setGameOver] = useState(false);
-  const [isGameStarted, setIsGameStarted] = useState(false);
-  const [head, setHead] = useState([]);
+const initialSnake = [
+  { x: 10, y: 10 },
+  { x: 10, y: 11 },
+  { x: 10, y: 12 },
+];
 
-  const boardRef = useRef();
+const initialFood = { x: 15, y: 15 };
+
+const Board = () => {
+  const [snake, setSnake] = useState(initialSnake);
+  const [direction, setDirection] = useState('up');
+  const [food, setFood] = useState(initialFood);
+  const [gameOver, setGameOver] = useState(false);
+  const boardRef = useRef(null);
+
+  const handleStartGame = () => {
+    setSnake(initialSnake);
+    setDirection('up');
+    setFood(initialFood);
+    setGameOver(false);
+  };
 
   useEffect(() => {
-    if (!isGameStarted) return;
-  
+    const handleKeyPress = (event) => {
+      if (event.key === 'ArrowUp' && direction !== 'down') {
+        setDirection('up');
+      } else if (event.key === 'ArrowDown' && direction !== 'up') {
+        setDirection('down');
+      } else if (event.key === 'ArrowLeft' && direction !== 'right') {
+        setDirection('left');
+      } else if (event.key === 'ArrowRight' && direction !== 'left') {
+        setDirection('right');
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyPress);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [direction]);
+
+  useEffect(() => {
     const moveSnake = () => {
+      if (gameOver) return;
+
       const newSnake = [...snake];
-      const head = { x: newSnake[0].x, y: newSnake[0].y };
-  
+      const head = { ...newSnake[0] };
+
       switch (direction) {
         case 'up':
           head.y -= 1;
@@ -71,55 +103,47 @@ const Board = () => {
         default:
           break;
       }
-  
-      newSnake.unshift(head);
-  
-      if (head.x === food.x && head.y === food.y) {
-        setFood(generateFoodPosition());
-      } else {
-        newSnake.pop();
-      }
-  
+
       if (
         head.x < 0 ||
-        head.x >= boardSize ||
+        head.x >= 20 ||
         head.y < 0 ||
-        head.y >= boardSize ||
+        head.y >= 20 ||
         newSnake.some((segment, index) => index !== 0 && segment.x === head.x && segment.y === head.y)
       ) {
         setGameOver(true);
+        return;
       }
-  
+
+      newSnake.unshift(head);
+
+      if (head.x === food.x && head.y === food.y) {
+        setFood({ x: Math.floor(Math.random() * 20), y: Math.floor(Math.random() * 20) });
+      } else {
+        newSnake.pop();
+      }
+
       setSnake(newSnake);
     };
-  
-    const gameInterval = setInterval(moveSnake, 200);
-  
+
+    const interval = setInterval(moveSnake, 200);
+
     return () => {
-      clearInterval(gameInterval);
+      clearInterval(interval);
     };
-  }, [snake, direction, isGameStarted, food]);
-  
-  const generateFoodPosition = () => {
-    const x = Math.floor(Math.random() * 20);
-    const y = Math.floor(Math.random() * 20);
-    return { x, y };
-  };
+  }, [snake, direction, food, gameOver]);
 
-  const renderSnake = () => {
-    return snake.map((segment, index) => (
-      <SnakeSegment key={index} style={{ top: `${segment.y * 20}px`, left: `${segment.x * 20}px` }} />
+  const renderSnake = () =>
+    snake.map((segment, index) => (
+      <SnakeSegment
+        key={index}
+        style={{ top: `${segment.y * 20}px`, left: `${segment.x * 20}px` }}
+      />
     ));
-  };
 
-  const renderFood = () => {
-    return <Food style={{ top: `${food.y * 20}px`, left: `${food.x * 20}px` }} />;
-  };
-
-  const handleStartGame = () => {
-    setIsGameStarted(true);
-    setGameOver(false); // Reset game over state
-  };
+  const renderFood = () => (
+    <Food style={{ top: `${food.y * 20}px`, left: `${food.x * 20}px` }} />
+  );
 
   return (
     <BoardWrapper>
@@ -128,7 +152,11 @@ const Board = () => {
         {renderFood()}
         {gameOver && <GameOverMessage>Game Over</GameOverMessage>}
       </BoardContainer>
-      {!isGameStarted && <button onClick={handleStartGame}>Start Game</button>}
+      {!gameOver && (
+        <button onClick={handleStartGame} disabled={gameOver}>
+          Start Game
+        </button>
+      )}
     </BoardWrapper>
   );
 };
